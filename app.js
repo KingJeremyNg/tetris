@@ -10,6 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
         let cell = document.createElement("div");
         PlayField.appendChild(cell);
     }
+    // Create a row of occupied cells below play-field
     for (let i = 0; i < 10; i++) {
         let cell = document.createElement("div");
         cell.classList.add("taken");
@@ -74,9 +75,6 @@ document.addEventListener("DOMContentLoaded", () => {
         })
     }
 
-    // Make Tetromino move
-    timerID = setInterval(moveDown, 250);
-
     function moveDown() {
         undraw();
         currentPosition += width;
@@ -93,4 +91,46 @@ document.addEventListener("DOMContentLoaded", () => {
             draw();
         }
     }
+
+    // Move Tetromino left or right and detect boundaries
+    function moveLeft() {
+        undraw();
+        const isAtLeftEdge = current.some(index => (currentPosition + index) % width === 0);
+        if (!isAtLeftEdge) currentPosition -= 1;
+        if (current.some(index => cells[currentPosition + index].classList.contains("taken"))) {
+            currentPosition += 1;
+        }
+        draw();
+    }
+
+    function moveRight() {
+        undraw();
+        const isAtRightEdge = current.some(index => (currentPosition + index) % width === 9);
+        if (!isAtRightEdge) currentPosition += 1;
+        if (current.some(index => cells[currentPosition + index].classList.contains("taken"))) {
+            currentPosition -= 1;
+        }
+        draw();
+    }
+
+    function drop() {
+
+    }
+
+    function descend() {
+        
+    }
+
+    function control(e) {
+        if (e.keyCode === 37) moveLeft();
+        else if (e.keyCode === 38) drop();
+        else if (e.keyCode === 39) moveRight();
+        else if (e.keyCode === 40) descend();
+    }
+
+    // Make Tetromino move down over time
+    timerID = setInterval(moveDown, 250);
+
+    // Assign event listener for key input
+    document.addEventListener("keyup", control);
 });
