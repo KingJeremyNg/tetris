@@ -89,6 +89,7 @@ document.addEventListener("DOMContentLoaded", () => {
             current = The_Tetrominoes[random][currentRotation];
             currentPosition = 4;
             draw();
+            return true;
         }
     }
 
@@ -105,7 +106,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function moveRight() {
         undraw();
-        const isAtRightEdge = current.some(index => (currentPosition + index) % width === 9);
+        const isAtRightEdge = current.some(index => (currentPosition + index) % width === width - 1);
         if (!isAtRightEdge) currentPosition += 1;
         if (current.some(index => cells[currentPosition + index].classList.contains("taken"))) {
             currentPosition -= 1;
@@ -114,22 +115,32 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function drop() {
-
+        while (true) {
+            undraw();
+            currentPosition += width;
+            draw();
+            if (freeze()) break;
+        }
     }
 
-    function descend() {
-        
+    function rotate() {
+        undraw();
+        currentRotation += 1;
+        if (currentRotation === current.length) currentRotation = 0;
+        current = The_Tetrominoes[random][currentRotation];
+        draw();
     }
 
     function control(e) {
-        if (e.keyCode === 37) moveLeft();
+        if (e.keyCode === 32) rotate();
+        else if (e.keyCode === 37) moveLeft();
         else if (e.keyCode === 38) drop();
         else if (e.keyCode === 39) moveRight();
-        else if (e.keyCode === 40) descend();
+        else if (e.keyCode === 40) moveDown();
     }
 
     // Make Tetromino move down over time
-    timerID = setInterval(moveDown, 250);
+    timerID = setInterval(moveDown, 1000);
 
     // Assign event listener for key input
     document.addEventListener("keyup", control);
